@@ -29,10 +29,6 @@ def rand(lower,upper):
     return ramdom.randint(lower,upper)
 
 """error class tree"""
-class InvalidMoveParam(BaseException):
-    """Error class for faulty arguments passed to the attack class"""
-    pass
-
 class InvalidMove(BaseException):
   pass
 
@@ -79,6 +75,7 @@ class pokemon():
         xp=0
         lvlup=[0,10,30,50,75,150,300,500,750,1000] #list of xp needed to level up by level
         duel=False
+        moves=[]
         self.nick=nick
         self.name=name
         self.typ=typ
@@ -88,6 +85,7 @@ class pokemon():
         self.lvlup=lvlup
         self.status=status
         self.duel=duel
+        self.moves=moves
         log('pokemon '+nick+' initialized {'+str([name,typ,lvl])+'}')
     def hpmod(self,amt):
         log('pokemon '+self.nick+' called hpmod; amt='+str(amt))
@@ -109,6 +107,20 @@ class pokemon():
         self.lvlupchk()
         log('pokemon '+nick+' called xpmod; amt='+str(amt))
         return self.xp
+
+    def learn(self,move):
+        if len(self.moves)+1 < 4:
+            if str(type(move))=="<class '__main__.attack'>":
+                if move not in self.moves:
+                    self.moves.append(move)
+                else:
+                    print('Move already in move set')
+            else:
+                print('Move is not a valid move')
+        else:
+            print('You already have 4 moves learned')
+    def forget(self,move):
+        self.moves.remove(move)
     def start_battle(self,opp):
         log('pokemon '+self.nick+' started battle; opp='+opp.nick)
         duel.init(self,opp) 
@@ -146,6 +158,8 @@ class battle():
             targ=self.defn
         else:
             targ=self.att
+        if move not in name.moves:
+            raise InvalidMove
         base=move.calc(name,name.xp)
         targ.hpmod(base[0])
         log(name.nick+'used '+move.name+' on '+targ.nick+'dealing '+str(base[0])+' damage')
@@ -163,5 +177,7 @@ if __name__ =='__main__':
     zap=attack('zap',10,'A lighting bolt of static electricity','electric')
     scratch=attack('scratch',10,'A flurry of blows directed at your opponent','normal')
     intox=attack('intoxicate',2,'A brew of chemicals perfect for a little poison','plant','pois')
+    lucy.learn(fb)
+    ted.learn(zap)
     lucy.start_battle(ted)
     lucy.attack(fb)
