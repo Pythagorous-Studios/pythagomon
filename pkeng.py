@@ -11,7 +11,7 @@ loglvl=1
 def log(msg,lvl=1):
     """wraper for the logger library"""
     if loglvl==lvl:
-        print(logger.log(msg,__name__,lvl))
+        print(logger.log(str(msg),__name__,lvl))
     else:
         logger.log(msg,lvl)
         
@@ -69,7 +69,7 @@ class attack():
         
 class pokemon():
     """class for all pokemon"""
-    def __init__(self,nick,name,typ,lvl=1):
+    def __init__(self,nick,name,typ,bmng,lvl=1):
         hp=90+(int(lvl)*10)
         status='norm' #alternatively: 'pois',poisoned,'uncon',unconcious etc...
         xp=0
@@ -85,6 +85,7 @@ class pokemon():
         self.lvlup=lvlup
         self.status=status
         self.duel=duel
+        self.bmng=bmng
         self.moves=moves
         log('pokemon '+nick+' initialized {'+str([name,typ,lvl])+'}')
     def hpmod(self,amt):
@@ -110,7 +111,7 @@ class pokemon():
 
     def learn(self,move):
         if len(self.moves)+1 < 4:
-            if str(type(move))=="<class '__main__.attack'>":
+            if str(type(move))=="<class 'pkeng.attack'>":
                 if move not in self.moves:
                     self.moves.append(move)
                 else:
@@ -123,12 +124,12 @@ class pokemon():
         self.moves.remove(move)
     def start_battle(self,opp):
         log('pokemon '+self.nick+' started battle; opp='+opp.nick)
-        duel.init(self,opp) 
+        self.bmng.init(self,opp) 
     def attack(self,move):
         log('pokemon '+self.nick+' called attack; move='+move.name)
         if self.status != 'uncon':
             if self.typ == move.typ or move.typ == "normal":
-              duel.action(self,move)
+                self.bmng.action(self,move)
               
                              
 class battle():
